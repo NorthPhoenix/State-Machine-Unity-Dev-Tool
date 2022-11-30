@@ -3,18 +3,19 @@ using UnityEditor;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
-public class MyWindow : EditorWindow
+public class StateMachineCreatorWindow : EditorWindow
 {
     Vector2 scrollPos;
-    List<string> states = new List<string> { "InitialState" };
+    List<string> states = new List<string>();
+    StateMachineCreator SMCreator = new StateMachineCreator();
 
 
     // Add menu named "My Window" to the Window menu
     [MenuItem("Window/State Machine Creator")]
-    static void Init()
+    static void ShowWindow()
     {
         // Get existing open window or if none, make a new one:
-        MyWindow window = (MyWindow)GetWindow(typeof(MyWindow));
+        StateMachineCreatorWindow window = (StateMachineCreatorWindow)GetWindow(typeof(StateMachineCreatorWindow), false, "State Machine Creator");
         //window.minSize = new Vector2(200, 300); 
         window.Show();
     }
@@ -46,11 +47,18 @@ public class MyWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("Add State"))
+        if (GUILayout.Button("Add State", GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.5f)))
         {
             states.Add("NewState");
         }
-        if (GUILayout.Button("Create")){}
+        if (GUILayout.Button("Delete Existing"))
+        {
+            SMCreator.DeleteExisting();
+        }
+        if (GUILayout.Button("Create"))
+        {
+            SMCreator.Run(states);
+        }
 
         EditorGUILayout.EndHorizontal();
 
