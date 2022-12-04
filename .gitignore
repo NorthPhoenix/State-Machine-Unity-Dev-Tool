@@ -9,8 +9,9 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
+
 /[Aa]ssets/State Machine Creator/
-/[Aa]ssets/MomentumBasedMovementStateMachine/
+/[Aa]ssets/[Ss]cripts/MomentumBasedMovementStateMachine/
 
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
