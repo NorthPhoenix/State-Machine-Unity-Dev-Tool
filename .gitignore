@@ -10,6 +10,7 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 /[Aa]ssets/State Machine Creator/
+/[Aa]ssets/MomentumBasedMovementStateMachine/
 
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
