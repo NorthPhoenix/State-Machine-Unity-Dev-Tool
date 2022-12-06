@@ -8,11 +8,12 @@ public class StateMachineCreatorWindow : EditorWindow
 {
     Vector2 scrollPos;
     List<string> states = new List<string>();
-    StateMachineCreator SMCreator = new StateMachineCreator();
+    StateMachineCreator SMCreator;
 
     private bool notEnoughStates = false;
     private bool sameNames = false;
     private bool emptyName = false;
+    private bool startsWithDigit = false;
 
     // Add menu named "My Window" to the Window menu
     [MenuItem("Window/State Machine Creator")]
@@ -66,16 +67,20 @@ public class StateMachineCreatorWindow : EditorWindow
             {
                 notEnoughStates = false;
             }
-            states.Add("NewState");
+            states.Add("New State");
         }
-        if (GUILayout.Button("Delete Existing"))
+        if (GUILayout.Button(new GUIContent("Delete Existing", "Deletes the root folder for this tool")))
         {
-            SMCreator.DeleteExisting();
+            if (SMCreator is not null)
+            {
+                SMCreator.DeleteExisting();
+            }
         }
         if (GUILayout.Button("Create"))
         {
             if (Validate())
             {
+                SMCreator = new StateMachineCreator();
                 SMCreator.Run(states);
             }
         }
@@ -93,6 +98,10 @@ public class StateMachineCreatorWindow : EditorWindow
         if (emptyName)
         {
             EditorGUILayout.HelpBox("A state name cannot be empty.", MessageType.Error, true);
+        }
+        if (startsWithDigit)
+        {
+            EditorGUILayout.HelpBox("State name cannot start with a digit.", MessageType.Error, true);
         }
         EditorGUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
 
@@ -123,8 +132,23 @@ public class StateMachineCreatorWindow : EditorWindow
         }
         emptyName = false;
 
+        //Make sure no state names start with a number
+        for (int i = 0; i < states.Count; i++)
+        {
+            if (Char.IsDigit(states[i][0]))
+            {
+                startsWithDigit = true;
+                return false;
+            }
+        }
+        startsWithDigit = false;
+
         //Make sure that all the state names are unique
-        List<string> temp = new List<string>(states);
+        List<string> temp = new List<string>();
+        for (int i = 0; i < states.Count; i++)
+        {
+            temp.Add(states[i].ToUpper().Replace(" ", ""));
+        }
         for (int i = 0; i < temp.Count; i++)
         {
             for (int j = i + 1; j < temp.Count; j++)
