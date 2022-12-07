@@ -46,6 +46,7 @@ public class StateFactory
         return _states[States.{1}];
     }}";
     #endregion
+
     #region Base State
     private static string BaseStateCode =
 @"public abstract class BaseState
@@ -77,6 +78,95 @@ public class StateFactory
         _ctx.CurrentState = newState;
     }
 }";
+    #endregion
+
+    #region Individual State
+    private static string StateTemplate =
+@"using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class {0} : BaseState
+{{
+    private static string _stateName = ""{0}"";
+
+    //Constructor
+    public {0}(StateMachine currentContext, StateFactory factory)
+        : base(currentContext, factory) {{ }}
+
+    // Method Overrides
+    public override void EnterState()
+    {{
+        Debug.Log($""Enter {{_stateName}}"");
+    }}
+
+    public override void UpdateState()
+    {{
+        Debug.Log($""Update {{_stateName}}"");
+        // --> Update state logic here <--
+
+        CheckSwitchState(); //execute after logic update
+    }}
+
+    public override void ExitState()
+    {{
+        Debug.Log($""Exit {{_stateName}}"");
+    }}
+
+    public override void CheckSwitchState()
+    {{
+        /* ---TEMPLATE---
+        if (newStateCondition == true)
+        {{
+            Debug.Log(""Switching to NewState"");
+            SwitchState(Factory.NewState()); //Call factory method for new state
+        }}
+        */
+    }}
+}}";
+    #endregion
+
+    #region State Machine
+    private static string MachineCode =
+@"using UnityEngine;
+
+public class StateMachine : MonoBehaviour
+{
+    // variables
+    //[SerializeField] type _variableName; <-- template
+
+    // state variables
+    BaseState _currentState;
+    StateFactory _states;
+
+
+    //getters and setters
+    public BaseState CurrentState { get { return _currentState; } set { _currentState = value; } }
+    //public type VariableName { get { return _variableName; } set { _variableName = value; } } <-- template
+
+
+    void Awake()
+    {
+        //state setup
+
+        //Initialize state factory
+        _states = new StateFactory(this);
+
+        // TODO - Set the starting state
+        //_currentState = _states.StateName(); <-- template
+
+        // Enter the starting state
+        _currentState.EnterState();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // Update the current state
+        _currentState.UpdateState();
+    }
+}";
+
     #endregion
 
     #endregion
@@ -206,18 +296,26 @@ public class StateFactory
     {
         for (int i = 0; i < stateCount; i++)
         {
-            GenState(enumStr[i], methodStr[i]);
+            GenState(methodStr[i]);
         }
     }
 
-    private void GenState(string upperName, string titleName)
+    private void GenState(string titleName)
     {
-        return;
+        string stateCode = String.Format(StateTemplate, titleName);
+
+        string relativePath = $"Assets/State Machine Creator/{SMFolder}/{titleName}.cs";
+        string fullPath = $"{Application.dataPath}/State Machine Creator/{SMFolder}/{titleName}.cs";
+        File.WriteAllText(fullPath, stateCode);
+        AssetDatabase.ImportAsset(relativePath);
     }
 
     private void GenMachine()
     {
-        return;
+        string relativePath = $"Assets/State Machine Creator/{SMFolder}/StateMachine.cs";
+        string fullPath = $"{Application.dataPath}/State Machine Creator/{SMFolder}/StateMachine.cs";
+        File.WriteAllText(fullPath, MachineCode);
+        AssetDatabase.ImportAsset(relativePath);
     }
     #endregion
 }

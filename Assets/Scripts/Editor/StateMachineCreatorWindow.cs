@@ -71,10 +71,8 @@ public class StateMachineCreatorWindow : EditorWindow
         }
         if (GUILayout.Button(new GUIContent("Delete Existing", "Deletes the root folder for this tool")))
         {
-            if (SMCreator is not null)
-            {
-                SMCreator.DeleteExisting();
-            }
+            SMCreator = new StateMachineCreator();
+            SMCreator.DeleteExisting();
         }
         if (GUILayout.Button("Create"))
         {
